@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EventMailService.Services
+﻿namespace EventMailService.Services;
+public interface IEmailSender
 {
-    internal interface IEmailSender
-    {
-    }
+    Task SendAsync(string toCsvOrAlias, string subject, string htmlBody);
 }

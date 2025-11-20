@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EventMailService.Workers
+﻿namespace EventMailService.Workers;
+public sealed class PlcMonitorStub : BackgroundService
 {
-    internal class PlcMonitorStub
-    {
-    }
+    protected override Task ExecuteAsync(CancellationToken stoppingToken) => Task.CompletedTask;
 }

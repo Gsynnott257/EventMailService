@@ -1,10 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EventMailService.Services
-{
-    internal interface IDbFactory
-    {
-    }
-}
+﻿using Microsoft.Data.SqlClient;
+namespace EventMailService.Services;
+public interface IDbFactory { SqlConnection Create(); }

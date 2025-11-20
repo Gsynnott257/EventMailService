@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EventMailService.Services
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+namespace EventMailService.Services;
+public sealed class SqlDbFactory(IConfiguration cfg) : IDbFactory
 {
-    internal class SqlDbFactory
-    {
-    }
+    public SqlConnection Create() => new(cfg.GetConnectionString("MainDb"));
 }
