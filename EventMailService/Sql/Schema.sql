@@ -1,16 +1,16 @@
 -- Timed events: run .bat/.cmd/.exe on schedule
 CREATE TABLE dbo.Event_Mail_Service_Time_Events (
-  ID                 INT IDENTITY PRIMARY KEY,
-  Job_Name           NVARCHAR(200) NOT NULL,
-  File_Path          NVARCHAR(1024) NOT NULL,  -- batch/exe
-  Arguments          NVARCHAR(1024) NULL,
-  Working_Directory  NVARCHAR(1024) NULL,
-  Last_Run_Time      DATETIME2(0) NULL,
-  Next_Run_Time      DATETIME2(0) NOT NULL,
-  Interval_Minutes   INT NULL,                 -- optional auto-recurring
-  Enabled            BIT NOT NULL DEFAULT(1),
-  Max_Retries        INT NOT NULL DEFAULT(3),
-  Retry_Interval_Sec INT NOT NULL DEFAULT(30)
+  ID                     INT IDENTITY PRIMARY KEY,
+  Job_Name               NVARCHAR(200) NOT NULL,
+  File_Path              NVARCHAR(1024) NOT NULL,  -- batch/exe
+  Arguments              NVARCHAR(1024) NULL,
+  Working_Directory      NVARCHAR(1024) NULL,
+  Last_Run_Time          DATETIME2(0) NULL,
+  Next_Run_Time          DATETIME2(0) NOT NULL,
+  Interval_Minutes       INT NULL,                 -- optional auto-recurring
+  Enabled                BIT NOT NULL DEFAULT(1),
+  Max_Retries            INT NOT NULL DEFAULT(3),
+  Retry_Interval_Seconds INT NOT NULL DEFAULT(30)
 );
 GO
 

@@ -21,13 +21,13 @@ public sealed class StoredProcedureMonitor(ILogger<StoredProcedureMonitor> log, 
         await conn.OpenAsync(ct);
         using var claim = new SqlCommand(@"
             ;WITH Due AS (
-              SELECT TOP (10) * FROM dbo.SpMonitor WITH (ROWLOCK, READPAST)
-              WHERE Enabled=1 AND NextRunTime <= SYSUTCDATETIME()
-              ORDER BY NextRunTime
+              SELECT TOP (10) * FROM dbo.Event_Mail_Service_Stored_Procedure_Events WITH (ROWLOCK, READPAST)
+              WHERE Enabled=1 AND Next_Run_Time <= SYSUTCDATETIME()
+              ORDER BY Next_Run_Time
             )
-            UPDATE Due SET LastRunTime = SYSUTCDATETIME()
-            OUTPUT inserted.SpId, inserted.SpName, inserted.DatabaseName, inserted.PollIntervalSec,
-                   inserted.FireOnAnyTrue, inserted.EmailGroupAlias;", conn);
+            UPDATE Due SET Last_Run_Time = SYSUTCDATETIME()
+            OUTPUT inserted.ID, inserted.Stored_Proc_Name, inserted.Database_Name, inserted.Poll_Interval_Seconds,
+                   inserted.Fire_On_Any_True, inserted.Email_Group_Alias;", conn);
         using var rdr = await claim.ExecuteReaderAsync(ct);
         var items = new List<dynamic>();
         while (await rdr.ReadAsync(ct))
@@ -48,8 +48,8 @@ public sealed class StoredProcedureMonitor(ILogger<StoredProcedureMonitor> log, 
     private async Task ExecuteAndNotifyAsync(SqlConnection conn, dynamic it, CancellationToken ct)
     {
         var pCmd = new SqlCommand(@"
-            SELECT ParamName, SqlDbType, Direction, ValueNVarChar, ValueInt, ValueDecimal, ValueDateTime2, ValueBit
-            FROM dbo.SpParameters WHERE SpId=@id;", conn);
+            SELECT Stored_Proc_Param, Sql_Db_Type, Direction, Value_NVarChar, Value_Int, Value_Decimal, Value_DateTime2, Value_Bit
+            FROM dbo.SpParameters WHERE Stored_Proc_ID=@id;", conn);
         pCmd.Parameters.AddWithValue("@id", (int)it.SpId);
         var pars = new List<SqlParameter>();
         using (var pr = await pCmd.ExecuteReaderAsync(ct))
@@ -92,7 +92,7 @@ public sealed class StoredProcedureMonitor(ILogger<StoredProcedureMonitor> log, 
             await email.SendAsync(it.EmailGroupAlias, $"SP Triggered: {it.SpName}", body);
             LoggerExtensions.LogInformation(log, "Alert emailed for {Sp}", it.SpName);
         }
-        using var upd = new SqlCommand(@"UPDATE dbo.SpMonitor SET NextRunTime = DATEADD(SECOND, @s, SYSUTCDATETIME()) WHERE SpId=@id;", conn);
+        using var upd = new SqlCommand(@"UPDATE dbo.Event_Mail_Service_Stored_Procedure_Events SET Next_Run_Time = DATEADD(SECOND, @s, SYSUTCDATETIME()) WHERE ID=@id;", conn);
         upd.Parameters.AddWithValue("@s", (int)it.PollIntervalSec);
         upd.Parameters.AddWithValue("@id", (int)it.SpId);
         await upd.ExecuteNonQueryAsync(ct);
